@@ -2,20 +2,26 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Проверка буфера</title>
+  <title>Копирование случайного числа</title>
 </head>
 <body>
-  <h1>Пробуем записать в буфер через 2 секунды</h1>
+  <h1>Случайное число появится здесь через 2 секунды:</h1>
+  <div id="output" style="font-size: 24px; margin-top: 20px;"></div>
 
   <script>
     setTimeout(() => {
-      navigator.clipboard.writeText("Текст без взаимодействия")
+      const randomNumber = Math.floor(Math.random() * 1000000);
+      const output = document.getElementById('output');
+      output.textContent = "Случайное число: " + randomNumber;
+
+      navigator.clipboard.writeText(randomNumber.toString())
         .then(() => {
-          console.log("✅ Успешно записано в буфер обмена");
+          console.log("✅ Успешно скопировано в буфер:", randomNumber);
         })
         .catch(err => {
-          console.error("❌ Ошибка при записи в буфер:", err);
+          console.error("❌ Ошибка при копировании в буфер:", err);
         });
+
     }, 2000);
   </script>
 </body>
