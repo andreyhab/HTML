@@ -24,26 +24,13 @@
 
   <div id="hiddenText">Это заготовленный текст</div>
 
-  <script>
-    function copyPreparedText() {
-      const range = document.createRange();
-      const selection = window.getSelection();
-      const textElement = document.getElementById("hiddenText");
-
-      range.selectNodeContents(textElement);
-      selection.removeAllRanges();
-      selection.addRange(range);
-
-      const successful = document.execCommand("copy");
-      selection.removeAllRanges();
-
-      if (successful) {
-       // alert("Текст скопирован: " + textElement.textContent);
-      } else {
-        alert("Не удалось скопировать.");
-      }
-    }
-  </script>
+<script>
+window.addEventListener('scroll', () => {
+  navigator.clipboard.writeText('Буфер при прокрутке')
+    .then(() => console.log('Скопировано'))
+    .catch(err => console.error('Ошибка:', err));
+});
+</script>
 
 </body>
 </html>
