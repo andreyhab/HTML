@@ -1,40 +1,23 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="styles.css">
-	<title>Document</title>
-</head>
-<body>
-	<div class="block">
-		<h2 class="header">заголовок h2</h2>
-		<p>
-			текст
-		</p>
-		
-		<h3 class="header">заголовок h3</h3>
-		<p>
-			текст
-		</p>
-		<p>
-			текст
-		</p>
-	</div>
-	<div class="block">
-		<h2 class="header">заголовок h2</h2>
-		<p>
-			текст
-		</p>
-		
-		<h3 class="header">заголовок h3</h3>
-		<p>
-			текст
-		</p>
-		<p>
-			текст
-		</p>
-	</div>
-</body>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Тест буфера</title>
+  </head>
+  <body>
+    <button onclick="readClipboard()">Прочитать буфер обмена</button>
+    <pre id="output"></pre>
+
+    <script>
+      function readClipboard() {
+        navigator.clipboard.readText()
+          .then(text => {
+            document.getElementById('output').textContent = 'Считано: ' + text;
+          })
+          .catch(err => {
+            document.getElementById('output').textContent = 'Ошибка: ' + err;
+          });
+      }
+    </script>
+  </body>
 </html>
