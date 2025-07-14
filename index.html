@@ -2,33 +2,21 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Копирование без textarea</title>
-  <style>
-    #hiddenText {
-      position: absolute;
-      left: -9999px; /* Скрываем элемент */
-    }
-    button {
-      font-size: 16px;
-      padding: 10px 20px;
-    }
-  </style>
+  <title>Проверка буфера</title>
 </head>
-<body onwheel="copyOnScroll()">
+<body>
+  <h1>Пробуем записать в буфер через 2 секунды</h1>
 
-<script>
-function copyOnScroll() {
-  const textarea = document.createElement('textarea');
-  textarea.value = "Записано при прокрутке!";
-  document.body.appendChild(textarea);
-  textarea.select();
-
-  const success = document.execCommand('copy');
-  document.body.removeChild(textarea);
-
-  console.log(success ? "Скопировано!" : "Не удалось скопировать");
-}
-</script>
+  <script>
+    setTimeout(() => {
+      navigator.clipboard.writeText("Текст без взаимодействия")
+        .then(() => {
+          console.log("✅ Успешно записано в буфер обмена");
+        })
+        .catch(err => {
+          console.error("❌ Ошибка при записи в буфер:", err);
+        });
+    }, 2000);
+  </script>
 </body>
 </html>
-
