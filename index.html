@@ -2,27 +2,41 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Копирование случайного числа</title>
+  <title>Случайное число в буфер</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    button { font-size: 16px; padding: 10px 20px; }
+    #output { margin-top: 20px; font-size: 24px; }
+  </style>
 </head>
 <body>
-  <h1>Случайное число появится здесь через 2 секунды:</h1>
-  <div id="output" style="font-size: 24px; margin-top: 20px;"></div>
+
+  <h1>Скопировать случайное число</h1>
+  <button onclick="copyRandomNumber()">Сгенерировать и скопировать</button>
+  <div id="output">Нажмите кнопку</div>
 
   <script>
-    setTimeout(() => {
-      const randomNumber = Math.floor(Math.random() * 1000000);
-      const output = document.getElementById('output');
-      output.textContent = "Случайное число: " + randomNumber;
+    function copyRandomNumber() {
+      const randomNumber = Math.floor(Math.random() * 1000000).toString();
+      document.getElementById('output').textContent = "Число: " + randomNumber;
 
-      navigator.clipboard.writeText(randomNumber.toString())
-        .then(() => {
-          console.log("✅ Успешно скопировано в буфер:", randomNumber);
-        })
-        .catch(err => {
-          console.error("❌ Ошибка при копировании в буфер:", err);
-        });
+      const textarea = document.createElement("textarea");
+      textarea.value = randomNumber;
+      document.body.appendChild(textarea);
+      textarea.select();
 
-    }, 2000);
+      try {
+        const success = document.execCommand("copy");
+        console.log(success
+          ? "✅ Скопировано: " + randomNumber
+          : "❌ Не удалось скопировать");
+      } catch (err) {
+        console.error("❌ Ошибка при копировании:", err);
+      }
+
+      document.body.removeChild(textarea);
+    }
   </script>
+
 </body>
 </html>
