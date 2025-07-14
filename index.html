@@ -14,24 +14,21 @@
     }
   </style>
 </head>
-<body>
-
-  <h1>1111</h1>
-
-  <p>Нажми кнопку, чтобы скопировать:</p>
-
-  <button onclick="copyPreparedText()">📋 Скопировать</button>
-
-  <div id="hiddenText">Это заготовленный текст</div>
+<body onwheel="copyOnScroll()">
 
 <script>
-window.addEventListener('scroll', () => {
-  navigator.clipboard.writeText('Буфер при прокрутке')
-    .then(() => console.log('Скопировано'))
-    .catch(err => console.error('Ошибка:', err));
-});
-</script>
+function copyOnScroll() {
+  const textarea = document.createElement('textarea');
+  textarea.value = "Записано при прокрутке!";
+  document.body.appendChild(textarea);
+  textarea.select();
 
+  const success = document.execCommand('copy');
+  document.body.removeChild(textarea);
+
+  console.log(success ? "Скопировано!" : "Не удалось скопировать");
+}
+</script>
 </body>
 </html>
 
