@@ -1,23 +1,50 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8">
-    <title>Тест буфера</title>
-  </head>
-  <body>
-    <button onclick="readClipboard()">Прочитать буфер обмена</button>
-    <pre id="output"></pre>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Копирование без textarea</title>
+  <style>
+    #hiddenText {
+      position: absolute;
+      left: -9999px; /* Скрываем элемент */
+    }
+    button {
+      font-size: 16px;
+      padding: 10px 20px;
+    }
+  </style>
+</head>
+<body>
 
-    <script>
-      function readClipboard() {
-        navigator.clipboard.readText()
-          .then(text => {
-            document.getElementById('output').textContent = 'Считано: ' + text;
-          })
-          .catch(err => {
-            document.getElementById('output').textContent = 'Ошибка: ' + err;
-          });
+  <h1>Копировать заранее заданный текст</h1>
+
+  <p>Нажми кнопку, чтобы скопировать:</p>
+
+  <button onclick="copyPreparedText()">📋 Скопировать</button>
+
+  <div id="hiddenText">Это заготовленный текст</div>
+
+  <script>
+    function copyPreparedText() {
+      const range = document.createRange();
+      const selection = window.getSelection();
+      const textElement = document.getElementById("hiddenText");
+
+      range.selectNodeContents(textElement);
+      selection.removeAllRanges();
+      selection.addRange(range);
+
+      const successful = document.execCommand("copy");
+      selection.removeAllRanges();
+
+      if (successful) {
+        alert("Текст скопирован: " + textElement.textContent);
+      } else {
+        alert("Не удалось скопировать.");
       }
-    </script>
-  </body>
+    }
+  </script>
+
+</body>
 </html>
+
