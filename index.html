@@ -16,7 +16,7 @@
 
         try {
           // Убедись, что путь "./osc/index.js" верный относительно этого HTML
-          const pluginUrl = "./OscTube/index.js";
+          const pluginUrl = "./osc/index.js";
           const { default: WamPlugin } = await import(pluginUrl);
 
           pluginInstance = await WamPlugin.createInstance(ctx);
