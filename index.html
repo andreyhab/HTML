@@ -1,42 +1,67 @@
 <!DOCTYPE html>
-<html lang="ru">
-<head>
-  <meta charset="UTF-8">
-  <title>Случайное число в буфер</title>
-  <style>
-    body { font-family: sans-serif; padding: 20px; }
-    button { font-size: 16px; padding: 10px 20px; }
-    #output { margin-top: 20px; font-size: 24px; }
-  </style>
-</head>
-<body>
+<html>
+  <head>
+    <title>My WAM Host</title>
+    <meta charset="UTF-8" />
+    <script type="module">
+      let ctx = null;
+      let pluginInstance = null;
 
-  <h1>Скопировать случайное число</h1>
-  <button onclick="copyRandomNumber()">Сгенерировать и скопировать</button>
-  <div id="output">Нажмите кнопку</div>
+      async function init() {
+        console.log("Начинаю загрузку...");
 
-  <script>
-    function copyRandomNumber() {
-      const randomNumber = Math.floor(Math.random() * 1000000).toString();
-      document.getElementById('output').textContent = "Число: " + randomNumber;
+        // Создаем контекст только после клика
+        if (!ctx) ctx = new AudioContext();
+        if (ctx.state === "suspended") await ctx.resume();
 
-      const textarea = document.createElement("textarea");
-      textarea.value = randomNumber;
-      document.body.appendChild(textarea);
-      textarea.select();
+        try {
+          // Убедись, что путь "./osc/index.js" верный относительно этого HTML
+          const pluginUrl = "./OscTube/index.js";
+          const { default: WamPlugin } = await import(pluginUrl);
 
-      try {
-        const success = document.execCommand("copy");
-        console.log(success
-          ? "✅ Скопировано: " + randomNumber
-          : "❌ Не удалось скопировать");
-      } catch (err) {
-        console.error("❌ Ошибка при копировании:", err);
+          pluginInstance = await WamPlugin.createInstance(ctx);
+
+          // Соединяем
+          pluginInstance.audioNode.connect(ctx.destination);
+
+          console.log("Плагин успешно загружен и подключен!", pluginInstance);
+          alert("Плагин готов! Нажимай клавиши на миди-клаве.");
+        } catch (e) {
+          console.error("Ошибка загрузки плагина:", e);
+        }
       }
 
-      document.body.removeChild(textarea);
-    }
-  </script>
+      // Ждем полной загрузки DOM, прежде чем вешать событие на кнопку
+      window.addEventListener("DOMContentLoaded", () => {
+        const btn = document.getElementById("init-btn");
+        if (btn) {
+          btn.onclick = init;
+        }
 
-</body>
+        // Запрос MIDI сразу при загрузке страницы
+        if (navigator.requestMIDIAccess) {
+          navigator
+            .requestMIDIAccess()
+            .then((midiAccess) => {
+              console.log("Доступ к MIDI получен");
+              for (var input of midiAccess.inputs.values()) {
+                console.log("Подключено устройство:", input.name);
+                input.onmidimessage = (msg) => {
+                  if (pluginInstance) {
+                    // Передаем MIDI данные в аудио-узел
+                    pluginInstance.audioNode.onMidi(msg.data);
+                  }
+                };
+              }
+            })
+            .catch((err) => console.error("MIDI недоступен:", err));
+        } else {
+          console.warn("Браузер не поддерживает Web MIDI API");
+        }
+      });
+    </script>
+  </head>
+  <body>
+    <button id="init-btn">Загрузить плагин и включить звук</button>
+  </body>
 </html>
