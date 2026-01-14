@@ -1,68 +1,69 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>My WAM Host</title>
-    <meta charset="UTF-8" />
-    <script src="coi-serviceworker.js"></script>
-    <script type="module">
-      let ctx = null;
-      let pluginInstance = null;
+<div id="header">
+  <button id="startCustom">Load WAM (custom GUI)</button>
+  <button id="note">Send MIDI Note</button>
+</div>
+<div id="host-main">
+  <div id="wam-container"></div>
+</div>
 
-      async function init() {
-        console.log("Начинаю загрузку...");
+<script>
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  const audioContext = new AudioCtx();
 
-        // Создаем контекст только после клика
-        if (!ctx) ctx = new AudioContext();
-        if (ctx.state === "suspended") await ctx.resume();
+  let hostKey;
+  let plugins;
 
-        try {
-          // Убедись, что путь "./osc/index.js" верный относительно этого HTML
-          const pluginUrl = "./osc/index.js";
-          const { default: WamPlugin } = await import(pluginUrl);
+  const initHost = async (audioContext) => {
+    const { default: initializeWamHost } = await import("");
+    const [, key] = await initializeWamHost(audioContext, "example");
+    hostKey = key;
+  };
 
-          pluginInstance = await WamPlugin.createInstance(ctx);
+  // Load a WebAudioModule, and return an instance.
+  async function loadWAM(path) {
+    const initialState = {};
+    const { default: WAM } = await import(path);
 
-          // Соединяем
-          pluginInstance.audioNode.connect(ctx.destination);
+    if (typeof WAM !== "function" || !WAM.isWebAudioModuleConstructor) {
+      throw new Error(`Path ${path} is not a WebAudioModule.`);
+    }
 
-          console.log("Плагин успешно загружен и подключен!", pluginInstance);
-          alert("Плагин готов! Нажимай клавиши на миди-клаве.");
-        } catch (e) {
-          console.error("Ошибка загрузки плагина:", e);
-        }
-      }
+    const instance = new WAM("example", audioContext);
+    await instance.initialize(initialState);
 
-      // Ждем полной загрузки DOM, прежде чем вешать событие на кнопку
-      window.addEventListener("DOMContentLoaded", () => {
-        const btn = document.getElementById("init-btn");
-        if (btn) {
-          btn.onclick = init;
-        }
+    return instance;
+  }
 
-        // Запрос MIDI сразу при загрузке страницы
-        if (navigator.requestMIDIAccess) {
-          navigator
-            .requestMIDIAccess()
-            .then((midiAccess) => {
-              console.log("Доступ к MIDI получен");
-              for (var input of midiAccess.inputs.values()) {
-                console.log("Подключено устройство:", input.name);
-                input.onmidimessage = (msg) => {
-                  if (pluginInstance) {
-                    // Передаем MIDI данные в аудио-узел
-                    pluginInstance.audioNode.onMidi(msg.data);
-                  }
-                };
-              }
-            })
-            .catch((err) => console.error("MIDI недоступен:", err));
-        } else {
-          console.warn("Браузер не поддерживает Web MIDI API");
-        }
-      });
-    </script>
-  </head>
-  <body>
-    <button id="init-btn">Загрузить плагин и включить звук</button>
-  </body>
-</html>
+  let wam;
+
+  async function run(wamUrl) {
+    await initHost(audioContext);
+
+    wam = await loadWAM(wamUrl);
+
+    // create the UI and add it to the container
+    const ui = await wam.createGui();
+    const container = document.getElementById("wam-container");
+    container.appendChild(ui);
+
+    wam.audioNode.connect(audioContext.destination);
+  }
+
+  document.getElementById("startCustom").addEventListener("click", () => {
+    audioContext.resume();
+    run("./osc/index.js");
+  });
+
+  document.getElementById("note").addEventListener("click", () => {
+    wam.audioNode.scheduleEvents({
+      type: "wam-midi",
+      time: wam.audioNode.context.currentTime,
+      data: { bytes: new Uint8Array([0x90, 74, 100]) },
+    });
+    wam.audioNode.scheduleEvents({
+      type: "wam-midi",
+      time: wam.audioNode.context.currentTime + 0.25,
+      data: { bytes: new Uint8Array([0x80, 74, 100]) },
+    });
+  });
+</script>
