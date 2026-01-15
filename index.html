@@ -1,69 +1,31 @@
-<div id="header">
-  <button id="startCustom">Load WAM (custom GUI)</button>
-  <button id="note">Send MIDI Note</button>
-</div>
-<div id="host-main">
-  <div id="wam-container"></div>
-</div>
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Dynamic Faust Host</title>
+    <style>
+    
+    </style>
+  </head>
+  <body>
+    <script type="module">
+      import { createFaustNode, createFaustUI } from "./osc/create-node.js";
 
-<script>
-  const AudioCtx = window.AudioContext || window.webkitAudioContext;
-  const audioContext = new AudioCtx();
+      async function init() {
+        const ctx = new AudioContext();
 
-  let hostKey;
-  let plugins;
+        // создаем FaustAudioNode
+        const { faustNode } = await createFaustNode(ctx);
 
-  const initHost = async (audioContext) => {
-    const { default: initializeWamHost } = await import("");
-    const [, key] = await initializeWamHost(audioContext, "example");
-    hostKey = key;
-  };
+        // подключим звук
+        faustNode.connect(ctx.destination);
 
-  // Load a WebAudioModule, and return an instance.
-  async function loadWAM(path) {
-    const initialState = {};
-    const { default: WAM } = await import(path);
+        // встроим UI в div
+        const div = document.getElementById("faustUI");
+        await createFaustUI(div, faustNode);
+      }
 
-    if (typeof WAM !== "function" || !WAM.isWebAudioModuleConstructor) {
-      throw new Error(`Path ${path} is not a WebAudioModule.`);
-    }
-
-    const instance = new WAM("example", audioContext);
-    await instance.initialize(initialState);
-
-    return instance;
-  }
-
-  let wam;
-
-  async function run(wamUrl) {
-    await initHost(audioContext);
-
-    wam = await loadWAM(wamUrl);
-
-    // create the UI and add it to the container
-    const ui = await wam.createGui();
-    const container = document.getElementById("wam-container");
-    container.appendChild(ui);
-
-    wam.audioNode.connect(audioContext.destination);
-  }
-
-  document.getElementById("startCustom").addEventListener("click", () => {
-    audioContext.resume();
-    run("./osc/index.js");
-  });
-
-  document.getElementById("note").addEventListener("click", () => {
-    wam.audioNode.scheduleEvents({
-      type: "wam-midi",
-      time: wam.audioNode.context.currentTime,
-      data: { bytes: new Uint8Array([0x90, 74, 100]) },
-    });
-    wam.audioNode.scheduleEvents({
-      type: "wam-midi",
-      time: wam.audioNode.context.currentTime + 0.25,
-      data: { bytes: new Uint8Array([0x80, 74, 100]) },
-    });
-  });
-</script>
+      init();
+    </script>
+  </body>
+</html>
