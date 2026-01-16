@@ -1,31 +1,135 @@
-<!DOCTYPE html>
-<html lang="ru">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Dynamic Faust Host</title>
-    <style>
-    
-    </style>
-  </head>
-  <body>
-    <script type="module">
-      import { createFaustNode, createFaustUI } from "./osc/create-node.js";
+<div id="header">
+  <button id="startCustom">Load DAW (Roll + Synth + Rev)</button>
+  <button id="note">Send MIDI Note</button>
+  <button onclick="downloadPreset()">Download Preset</button>
+  <input type="file" id="fileInput" style="display: none" accept=".json" />
+  <button id="uploadBtn">Upload Preset</button>
+</div>
 
-      async function init() {
-        const ctx = new AudioContext();
+<div id="host-main" style="display: flex; flex-direction: column; gap: 20px">
+  <div id="wam-container"></div>
+</div>
 
-        // создаем FaustAudioNode
-        const { faustNode } = await createFaustNode(ctx);
+<script>
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  const audioContext = new AudioCtx();
 
-        // подключим звук
-        faustNode.connect(ctx.destination);
+  let hostKey;
+  let wamRoll; // Пианоролл (Секвенсор)
+  let wamSynth; // Синтезатор
+  let wamEffect; // Эффект
 
-        // встроим UI в div
-        const div = document.getElementById("faustUI");
-        await createFaustUI(div, faustNode);
+  const initHost = async (audioContext) => {
+    if (hostKey) return hostKey;
+    const { default: initializeWamHost } = await import(
+      "https://www.webaudiomodules.com/sdk/2.0.0-alpha.6/src/initializeWamHost.js"
+    );
+    const [, key] = await initializeWamHost(audioContext, "example");
+    hostKey = key;
+    return key;
+  };
+
+  async function loadWAM(path) {
+    const { default: WAM } = await import(path);
+    const instance = new WAM("example", audioContext);
+    await instance.initialize({});
+    return instance;
+  }
+
+  async function initMIDI() {
+    if (!navigator.requestMIDIAccess) return;
+    const midiAccess = await navigator.requestMIDIAccess();
+
+    const handleMidi = (message) => {
+      // ТЕПЕРЬ ШЛЕМ В ПИАНОРОЛЛ
+      if (wamRoll) {
+        wamRoll.audioNode.scheduleEvents({
+          type: "wam-midi",
+          time: audioContext.currentTime,
+          data: { bytes: message.data },
+        });
       }
+    };
 
-      init();
-    </script>
-  </body>
-</html>
+    for (let input of midiAccess.inputs.values()) {
+      input.onmidimessage = handleMidi;
+    }
+  }
+
+  async function runChain() {
+    await initHost(audioContext);
+
+    console.log("Loading modules...");
+    // Загружаем Пианоролл по внешней ссылке
+    wamRoll = await loadWAM("./pr/index.js");
+    // Твои локальные модули
+    wamSynth = await loadWAM("./fm/index.js");
+    wamEffect = await loadWAM("./rev/index.js");
+
+    const rollNode = wamRoll.audioNode;
+    const synthNode = wamSynth.audioNode;
+    const effectNode = wamEffect.audioNode;
+
+    // --- MIDI СОЕДИНЕНИЕ ---
+    // Соединяем выход Пианоролла со входом Синтезатора
+    rollNode.connectEvents(synthNode.instanceId);
+
+    // --- AUDIO СОЕДИНЕНИЕ ---
+    synthNode.disconnect();
+    effectNode.disconnect();
+
+    if (effectNode.numberOfInputs > 0) {
+      synthNode.connect(effectNode);
+      effectNode.connect(audioContext.destination);
+    } else {
+      synthNode.connect(audioContext.destination);
+      effectNode.connect(audioContext.destination);
+    }
+
+    // --- ОТРИСОВКА GUI ---
+    const container = document.getElementById("wam-container");
+    container.innerHTML = "";
+
+    // 1. Сначала Пианоролл (он большой)
+    const rollGui = await wamRoll.createGui();
+    container.appendChild(rollGui);
+
+    // 2. Синт и Эффект ниже
+    const rack = document.createElement("div");
+    rack.style.display = "flex";
+    rack.style.gap = "10px";
+    rack.style.marginTop = "20px";
+
+    rack.appendChild(await wamSynth.createGui());
+    rack.appendChild(await wamEffect.createGui());
+
+    container.appendChild(rack);
+
+    console.log("DAW Chain is ready!");
+  }
+
+  document.getElementById("startCustom").addEventListener("click", () => {
+    audioContext.resume();
+    initMIDI();
+    runChain();
+  });
+
+  // Обновленная функция для кнопки теста ноты (шлем в Ролл)
+  document.getElementById("note").addEventListener("click", () => {
+    if (!wamRoll) return;
+    const now = audioContext.currentTime;
+    wamRoll.audioNode.scheduleEvents({
+      type: "wam-midi",
+      time: now,
+      data: { bytes: new Uint8Array([0x90, 60, 100]) },
+    });
+    wamRoll.audioNode.scheduleEvents({
+      type: "wam-midi",
+      time: now + 0.5,
+      data: { bytes: new Uint8Array([0x80, 60, 100]) },
+    });
+  });
+
+  // Функции пресетов оставляем как были, они работают с wamSynth
+  // ... (downloadPreset, uploadPreset и т.д.)
+</script>
