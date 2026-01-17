@@ -63,7 +63,7 @@
     // Загружаем Пианоролл по внешней ссылке
     wamRoll = await loadWAM("./pr/index.js");
     // Твои локальные модули
-    wamSynth = await loadWAM("./fm/index.js");
+    wamSynth = await loadWAM("./pn/src/index.js");
     wamEffect = await loadWAM("./rev/index.js");
 
     const rollNode = wamRoll.audioNode;
@@ -118,12 +118,12 @@
   document.getElementById("note").addEventListener("click", () => {
     if (!wamRoll) return;
     const now = audioContext.currentTime;
-    wamRoll.audioNode.scheduleEvents({
+    wamSynth.audioNode.scheduleEvents({
       type: "wam-midi",
       time: now,
       data: { bytes: new Uint8Array([0x90, 60, 100]) },
     });
-    wamRoll.audioNode.scheduleEvents({
+    wamSynth.audioNode.scheduleEvents({
       type: "wam-midi",
       time: now + 0.5,
       data: { bytes: new Uint8Array([0x80, 60, 100]) },
