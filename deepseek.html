@@ -14,13 +14,15 @@
     height: 100vh;
     overflow: hidden;
   }
+  
   #player-wrap {
     position: relative;
     width: 100%;
     max-height: 40vh;
     background: #000;
     flex-shrink: 0;
-    transition: max-height 0.3s;
+    transition: max-height 0.3s, opacity 0.3s;
+    overflow: hidden;
   }
   #ytplayer {
     width: 100%;
@@ -28,6 +30,7 @@
     display: block;
     transition: height 0.3s;
   }
+  
   #controls {
     display: flex;
     align-items: center;
@@ -38,6 +41,7 @@
     flex-shrink: 0;
     flex-wrap: wrap;
   }
+  
   #toggleVideoBtn {
     cursor: pointer;
     padding: 6px 12px;
@@ -57,10 +61,13 @@
   #subtitles {
     flex: 1;
     overflow-y: auto;
-    /* Огромные отступы, чтобы любой блок мог оказаться в центре */
-    padding: 30vh 16px 50vh; 
+    /* Отступы для возможности центрирования первого и последнего блока */
+    padding: 50vh 16px 50vh; 
     line-height: 1.5;
-    /* Отключаем стандартную плавность, будем управлять скроллом вручную */
+    /* Запрещаем выделение текста мышью */
+    user-select: none;
+    -webkit-user-select: none;
+    /* Отключаем стандартную плавность, управляем вручную */
     scroll-behavior: auto; 
     -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
     mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
@@ -70,24 +77,26 @@
     padding: 12px 20px;
     margin-bottom: 8px;
     border-radius: 8px;
-    transition: opacity 0.4s, background 0.4s;
     font-size: 18px;
-    cursor: pointer;
-    opacity: 0.2; /* Неактивные блоки сильно тусклые */
     text-align: center;
-    transform: scale(0.95); /* Неактивные чуть меньше */
-    transition: all 0.4s ease-out;
+    /* Отключаем любые переходы и ховеры */
+    transition: none; 
+    cursor: default;
+    opacity: 0.2; 
   }
 
-  .cue:hover {
-    opacity: 0.6;
-    background: #1a1a1a;
+  /* Убираем любые эффекты при наведении и нажатии */
+  .cue:hover, .cue:active {
+    background: transparent;
+    opacity: 0.2;
+    transform: none;
   }
 
+  /* Активный блок */
   .cue.active {
     opacity: 1;
-    transform: scale(1); /* Активный блок увеличивается */
-    background: transparent; /* Убрали фон, чтобы не было прямоугольников */
+    transform: scale(1.05); /* Легкое увеличение активного блока */
+    transition: opacity 0.3s, transform 0.3s; /* Оставляем плавность только для смены блока */
   }
 
   .cue .en {
@@ -117,7 +126,7 @@
 
 <div id="controls">
   <button id="toggleVideoBtn">Скрыть видео (Enter)</button>
-  <span class="hint">Пробел — пауза, ←/→ — ±5 сек, клик по тексту — перемотка</span>
+  <span class="hint">Пробел — пауза, ←/→ — ±5 сек</span>
 </div>
 
 <div id="subtitles">
@@ -129,6 +138,7 @@
   let activeIndex = -1;
   let player = null;
   let playerReady = false;
+  let isVideoHidden = false; // Флаг для расчета центрирования
 
   function timeToSeconds(t) {
     const parts = t.split(':').map(Number);
@@ -166,7 +176,6 @@
       const div = document.createElement('div');
       div.className = 'cue';
       div.dataset.index = i;
-      div.dataset.time = cue.seconds;
 
       const en = document.createElement('div');
       en.className = 'en';
@@ -180,20 +189,7 @@
       div.appendChild(ru);
       container.appendChild(div);
     });
-
-    // Клик — перемотка на начало блока
-    container.addEventListener('click', e => {
-      const cueEl = e.target.closest('.cue');
-      if (!cueEl) return;
-      
-      const timeToSeek = parseFloat(cueEl.dataset.time);
-      if (playerReady && player && typeof player.seekTo === 'function') {
-        player.seekTo(timeToSeek, true);
-        if (player.getPlayerState() !== YT.PlayerState.PLAYING) {
-          player.playVideo();
-        }
-      }
-    });
+    // Обработчик клика полностью удален
   }
 
   // YouTube API
@@ -210,11 +206,10 @@
   document.head.appendChild(tag);
 
   // ==========================================
-  // НОВАЯ ЛОГИКА ПЛАВНОЙ СИНХРОНИЗАЦИИ
+  // ЛОГИКА ПЛАВНОЙ СИНХРОНИЗАЦИИ И ЦЕНТРИРОВАНИЯ
   // ==========================================
   
-  let currentScrollTop = 0; // Текущее положение скролла
-  let targetScrollTop = 0;  // Целевое положение скролла
+  let targetScrollTop = 0;
 
   function updateSubtitlePosition() {
     if (!playerReady || !player || typeof player.getCurrentTime !== 'function') {
@@ -231,7 +226,7 @@
       else break;
     }
 
-    // 2. Обновляем классы (если индекс изменился)
+    // 2. Обновляем классы
     if (idx !== activeIndex) {
       activeIndex = idx;
       const els = document.querySelectorAll('.cue');
@@ -247,34 +242,37 @@
         // Получаем координаты центра блока относительно контейнера
         const elCenter = currentEl.offsetTop + currentEl.offsetHeight / 2;
         
-        // Целевая позиция скролла: центрируем блок
-        targetScrollTop = elCenter - (container.clientHeight / 2);
+        // Вычисляем, сколько места занимает плеер и панель управления СВЕРХУ
+        const playerWrap = document.getElementById('player-wrap');
+        const controls = document.getElementById('controls');
+        const topOffset = playerWrap.offsetHeight + controls.offsetHeight;
+        
+        // Высота видимой области для субтитров = общая высота минус плеер и панель
+        const visibleHeight = window.innerHeight - topOffset;
+        
+        // Центрируем блок относительно этой видимой области
+        // container.getBoundingClientRect().top - это координата начала контейнера субтитров на экране
+        targetScrollTop = elCenter - (visibleHeight / 2);
+        
+        // Плавная прокрутка
+        const diff = targetScrollTop - container.scrollTop;
+        if (Math.abs(diff) < 1) {
+          container.scrollTop = targetScrollTop;
+        } else {
+          container.scrollTop += diff * 0.1;
+        }
       }
-    }
-
-    // 4. ПЛАВНАЯ ПРОКРУТКА (интерполяция)
-    // Вместо мгновенного прыжка, мы каждый кадр сдвигаем скролл на 10% от разницы
-    // Это создает идеально плавное "догоняние" без рывков
-    const diff = targetScrollTop - container.scrollTop;
-    
-    // Если разница очень маленькая, просто приравниваем (чтобы не было микро-дрожания)
-    if (Math.abs(diff) < 0.5) {
-      container.scrollTop = targetScrollTop;
-    } else {
-      container.scrollTop += diff * 0.1; // Коэффициент плавности (0.1 = 10% за кадр)
     }
 
     requestAnimationFrame(updateSubtitlePosition);
   }
 
-  // Запуск цикла синхронизации
+  // Запуск цикла
   setTimeout(() => {
     requestAnimationFrame(updateSubtitlePosition);
   }, 1000);
 
-
   // ===== Управление видео =====
-  let isVideoHidden = false;
   const videoBtn = document.getElementById('toggleVideoBtn');
   const playerWrap = document.getElementById('player-wrap');
   const ytPlayerDiv = document.getElementById('ytplayer');
@@ -283,16 +281,20 @@
     isVideoHidden = !isVideoHidden;
     if (isVideoHidden) {
       playerWrap.style.maxHeight = '0';
-      playerWrap.style.overflow = 'hidden';
+      playerWrap.style.opacity = '0';
       ytPlayerDiv.style.height = '0';
       videoBtn.textContent = 'Показать видео (Enter)';
     } else {
       playerWrap.style.maxHeight = '40vh';
-      playerWrap.style.overflow = 'visible';
+      playerWrap.style.opacity = '1';
       ytPlayerDiv.style.height = '40vh';
       videoBtn.textContent = 'Скрыть видео (Enter)';
     }
     videoBtn.blur();
+    // Даем время на анимацию скрытия плеера, затем принудительно пересчитываем позицию
+    setTimeout(() => {
+      targetScrollTop = -9999; // Форсируем пересчет
+    }, 350);
   }
 
   videoBtn.addEventListener('click', toggleVideoVisibility);
