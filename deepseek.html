@@ -20,11 +20,13 @@
     max-height: 45vh;
     background: #000;
     flex-shrink: 0;
+    transition: max-height 0.3s;
   }
   #ytplayer {
     width: 100%;
     height: 45vh;
     display: block;
+    transition: height 0.3s;
   }
   #controls {
     display: flex;
@@ -35,13 +37,25 @@
     border-bottom: 1px solid #333;
     flex-shrink: 0;
   }
-  #controls label {
+  #toggleVideoBtn {
     cursor: pointer;
-    user-select: none;
-    display: flex;
-    align-items: center;
-    gap: 6px;
+    padding: 6px 12px;
+    background: #333;
+    color: #fff;
+    border: 1px solid #555;
+    border-radius: 4px;
     font-size: 14px;
+    outline: none;
+  }
+  #toggleVideoBtn:hover {
+    background: #444;
+  }
+  #toggleVideoBtn:focus {
+    border-color: #4caf50;
+  }
+  .hint {
+    color: #666;
+    font-size: 12px;
   }
   #subtitles {
     flex: 1;
@@ -55,10 +69,11 @@
     border-radius: 4px;
     transition: background 0.2s;
     font-size: 15px;
+    border-left: 3px solid transparent;
   }
   .cue.active {
     background: #2a2a2a;
-    border-left: 3px solid #4caf50;
+    border-left-color: #4caf50;
   }
   .cue .en {
     color: #ddd;
@@ -93,8 +108,8 @@
 </div>
 
 <div id="controls">
-  <label><input type="checkbox" id="hideVideo"> Скрыть видео</label>
-  <span style="color:#666;font-size:12px;">Пробел — пауза, ←/→ — ±5 сек, клик по слову — озвучка</span>
+  <button id="toggleVideoBtn">Скрыть видео (Enter)</button>
+  <span class="hint">Пробел — пауза, ←/→ — ±5 сек, клик по слову — озвучка</span>
 </div>
 
 <div id="subtitles">
@@ -103,7 +118,7 @@
 
 <script>
   // ===== 1. Загрузка субтитров =====
-  let cues = [];          // массив {time, text, translation, seconds}
+  let cues = [];
   let activeIndex = -1;
   let player = null;
   let playerReady = false;
@@ -126,12 +141,16 @@
         seconds: timeToSeconds(c.time)
       }));
       renderCues();
+      // Безопасное удаление индикатора загрузки
       const loadingEl = document.getElementById('loading');
       if (loadingEl) loadingEl.remove();
     })
     .catch(err => {
-      document.getElementById('subtitles').innerHTML =
-        '<div id="loading">Ошибка загрузки: ' + err.message + '<br>Убедитесь, что deepseek.json лежит рядом и запущен локальный сервер.</div>';
+      const subDiv = document.getElementById('subtitles');
+      if (subDiv) {
+        subDiv.innerHTML =
+          '<div id="loading">Ошибка загрузки: ' + err.message + '<br>Убедитесь, что deepseek.json лежит рядом и запущен сервер.</div>';
+      }
     });
 
   function renderCues() {
@@ -160,7 +179,6 @@
       container.appendChild(div);
     });
 
-    // Клик по слову — озвучка
     container.addEventListener('click', e => {
       const wordEl = e.target.closest('.word');
       if (!wordEl) return;
@@ -176,7 +194,6 @@
     if (!word) return;
     if (currentUtterance) speechSynthesis.cancel();
 
-    // Подсветка
     document.querySelectorAll('.word.speaking').forEach(w => w.classList.remove('speaking'));
     el.classList.add('speaking');
 
@@ -184,7 +201,6 @@
     utter.lang = 'en-US';
     utter.rate = 0.9;
 
-    // Попробовать найти английский голос
     const voices = speechSynthesis.getVoices();
     const enVoice = voices.find(v => v.lang.startsWith('en'));
     if (enVoice) utter.voice = enVoice;
@@ -196,7 +212,6 @@
     speechSynthesis.speak(utter);
   }
 
-  // Подгружаем голоса (некоторые браузеры отдают их асинхронно)
   speechSynthesis.onvoiceschanged = () => {};
 
   // ===== 3. YouTube IFrame API =====
@@ -218,7 +233,6 @@
     });
   };
 
-  // Загружаем API
   const tag = document.createElement('script');
   tag.src = 'https://www.youtube.com/iframe_api';
   document.head.appendChild(tag);
@@ -228,7 +242,6 @@
     if (!playerReady || !player || typeof player.getCurrentTime !== 'function') return;
     const t = player.getCurrentTime();
 
-    // Находим активный cue
     let idx = -1;
     for (let i = 0; i < cues.length; i++) {
       if (t >= cues[i].seconds) idx = i;
@@ -246,9 +259,35 @@
     }
   }, 250);
 
-  // ===== 5. Горячие клавиши =====
+  // ===== 5. Управление видео (скрыть/показать) =====
+  let isVideoHidden = false;
+  const videoBtn = document.getElementById('toggleVideoBtn');
+  const playerWrap = document.getElementById('player-wrap');
+  const ytPlayerDiv = document.getElementById('ytplayer');
+
+  function toggleVideoVisibility() {
+    isVideoHidden = !isVideoHidden;
+    if (isVideoHidden) {
+      playerWrap.style.maxHeight = '0';
+      playerWrap.style.overflow = 'hidden';
+      ytPlayerDiv.style.height = '0';
+      videoBtn.textContent = 'Показать видео (Enter)';
+    } else {
+      playerWrap.style.maxHeight = '45vh';
+      playerWrap.style.overflow = 'visible';
+      ytPlayerDiv.style.height = '45vh';
+      videoBtn.textContent = 'Скрыть видео (Enter)';
+    }
+    // Снимаем фокус с кнопки, чтобы пробел не нажимал её повторно
+    videoBtn.blur();
+  }
+
+  videoBtn.addEventListener('click', toggleVideoVisibility);
+
+  // ===== 6. Горячие клавиши =====
   document.addEventListener('keydown', e => {
     if (!playerReady || !player) return;
+    
     const tag = document.activeElement.tagName;
     if (tag === 'INPUT' || tag === 'TEXTAREA') return;
 
@@ -263,20 +302,9 @@
     } else if (e.code === 'ArrowLeft') {
       e.preventDefault();
       player.seekTo(Math.max(player.getCurrentTime() - 5, 0), true);
-    }
-  });
-
-  // ===== 6. Скрыть видео =====
-  document.getElementById('hideVideo').addEventListener('change', e => {
-    const wrap = document.getElementById('player-wrap');
-    if (e.target.checked) {
-      wrap.style.maxHeight = '0';
-      wrap.style.overflow = 'hidden';
-      document.getElementById('ytplayer').style.height = '0';
-    } else {
-      wrap.style.maxHeight = '45vh';
-      wrap.style.overflow = 'visible';
-      document.getElementById('ytplayer').style.height = '45vh';
+    } else if (e.code === 'Enter') {
+      e.preventDefault();
+      toggleVideoVisibility();
     }
   });
 </script>
