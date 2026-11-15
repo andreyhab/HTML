@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <title>Субтитры</title>
 <style>
-  /* Сбрасываем все отступы и запрещаем выделение */
   html, body {
     margin: 0;
     padding: 0;
@@ -19,7 +18,7 @@
     cursor: default;
   }
 
-  /* Скрытый контейнер для плеера (он есть, но его не видно) */
+  /* Плеер полностью скрыт */
   #player-container {
     position: absolute;
     top: 0;
@@ -31,35 +30,26 @@
     overflow: hidden;
   }
 
-  /* Контейнер субтитров на весь экран */
+  /* Контейнер текста */
   #subtitles-container {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    overflow-y: hidden; /* Прокрутку делаем программно */
-    padding: 50vh 10vw; /* Отступы, чтобы текст всегда мог быть в центре */
+    overflow-y: hidden; /* Программная прокрутка */
+    padding: 50vh 10vw; /* Отступы, чтобы первый и последний блоки могли центрироваться */
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
     align-items: center;
   }
 
-  /* Блок субтитра */
+  /* Блок текста. Никаких выделений, прозрачностей и масштабов */
   .cue {
     text-align: center;
-    margin-bottom: 40px; /* Расстояние между блоками */
-    opacity: 0.15; /* Неактивные блоки тусклые */
-    transition: opacity 0.4s ease, transform 0.4s ease;
-    transform: scale(0.9);
-    pointer-events: none; /* Отключаем любые клики по блокам */
-  }
-
-  /* Активный блок */
-  .cue.active {
-    opacity: 1;
-    transform: scale(1);
+    margin-bottom: 40px;
+    pointer-events: none;
   }
 
   .cue .en {
@@ -67,7 +57,7 @@
     font-weight: 600;
     line-height: 1.3;
     margin-bottom: 0.5rem;
-    text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+    color: #fff;
   }
 
   .cue .ru {
@@ -89,12 +79,10 @@
 </head>
 <body>
 
-<!-- Плеер физически есть, но скрыт и невидим -->
 <div id="player-container">
   <div id="ytplayer"></div>
 </div>
 
-<!-- Текст на весь экран -->
 <div id="subtitles-container">
   <div id="loading">Загрузка…</div>
 </div>
@@ -104,9 +92,8 @@
   let activeIndex = -1;
   let player = null;
   let playerReady = false;
-  let targetScrollTop = 0;
 
-  // Функция перевода времени в секунды
+  // Перевод времени в секунды
   function timeToSeconds(t) {
     const parts = t.split(':').map(Number);
     if (parts.length === 2) return parts[0] * 60 + parts[1];
@@ -114,7 +101,7 @@
     return 0;
   }
 
-  // 1. Загрузка JSON
+  // 1. Загрузка данных
   fetch('deepseek.json')
     .then(r => {
       if (!r.ok) throw new Error('Файл не найден');
@@ -134,7 +121,7 @@
         `<div id="loading" style="color:red">Ошибка: ${err.message}</div>`;
     });
 
-  // 2. Отрисовка блоков
+  // 2. Отрисовка
   function renderCues() {
     const container = document.getElementById('subtitles-container');
     container.innerHTML = '';
@@ -158,7 +145,7 @@
     });
   }
 
-  // 3. Подключение YouTube API (невидимое)
+  // 3. YouTube API (скрытый)
   const VIDEO_ID = 'rk2dsMOoe8U';
   
   window.onYouTubeIframeAPIReady = function() {
@@ -168,8 +155,7 @@
         autoplay: 0, 
         controls: 0, 
         rel: 0, 
-        modestbranding: 1,
-        disablekb: 1 // Отключаем родные горячие клавиши ютуба
+        disablekb: 1 
       },
       events: { 
         onReady: () => { playerReady = true; } 
@@ -182,9 +168,11 @@
   document.head.appendChild(tag);
 
   // ==========================================
-  // 4. ПЛАВНАЯ СИНХРОНИЗАЦИЯ И ЦЕНТРИРОВАНИЕ
+  // 4. ПЛАВНОЕ ЦЕНТРИРОВАНИЕ (БЕЗ ВЫДЕЛЕНИЙ)
   // ==========================================
   
+  let targetScrollTop = 0;
+
   function syncLoop() {
     if (!playerReady || !player || typeof player.getCurrentTime !== 'function') {
       requestAnimationFrame(syncLoop);
@@ -194,77 +182,61 @@
     const currentTime = player.getCurrentTime();
     const container = document.getElementById('subtitles-container');
 
-    // Находим текущий блок
+    // Находим индекс текущего блока по времени
     let idx = -1;
     for (let i = 0; i < cues.length; i++) {
       if (currentTime >= cues[i].seconds) idx = i;
       else break;
     }
 
-    // Меняем активный класс, если блок сменился
+    // Если индекс изменился, обновляем целевую позицию
     if (idx !== activeIndex) {
       activeIndex = idx;
-      const els = container.querySelectorAll('.cue');
-      els.forEach((el, i) => el.classList.toggle('active', i === idx));
-    }
-
-    // Плавное центрирование
-    if (idx !== -1) {
-      const currentEl = container.querySelector(`.cue[data-index="${idx}"]`);
       
-      if (currentEl) {
-        // Вычисляем, где находится центр этого блока
-        const elCenter = currentEl.offsetTop + currentEl.offsetHeight / 2;
-        
-        // Нам нужно, чтобы этот центр оказался ровно посередине экрана.
-        // Высота экрана = window.innerHeight. Центр экрана = window.innerHeight / 2.
-        // Позиция скролла = elCenter - (window.innerHeight / 2)
-        targetScrollTop = elCenter - (window.innerHeight / 2);
-
-        // Плавная интерполяция (чем меньше коэффициент, тем плавнее и медленнее)
-        const diff = targetScrollTop - container.scrollTop;
-        
-        if (Math.abs(diff) < 0.5) {
-          container.scrollTop = targetScrollTop;
-        } else {
-          container.scrollTop += diff * 0.08; // 0.08 = 8% пути за кадр
+      if (idx !== -1) {
+        const currentEl = container.querySelector(`.cue[data-index="${idx}"]`);
+        if (currentEl) {
+          const elCenter = currentEl.offsetTop + currentEl.offsetHeight / 2;
+          targetScrollTop = elCenter - (window.innerHeight / 2);
         }
       }
+    }
+
+    // Плавная прокрутка к целевой позиции (интерполяция)
+    const diff = targetScrollTop - container.scrollTop;
+    
+    if (Math.abs(diff) < 0.5) {
+      container.scrollTop = targetScrollTop;
+    } else {
+      container.scrollTop += diff * 0.08;
     }
 
     requestAnimationFrame(syncLoop);
   }
 
-  // Запуск цикла после инициализации
   setTimeout(() => {
     requestAnimationFrame(syncLoop);
   }, 1000);
 
   // ==========================================
-  // 5. УПРАВЛЕНИЕ С КЛАВИАТУРЫ
+  // 5. КЛАВИШИ
   // ==========================================
   
   document.addEventListener('keydown', e => {
     if (!playerReady || !player) return;
 
-    // Пробел: Пауза / Воспроизведение
     if (e.code === 'Space') {
-      e.preventDefault(); // Чтобы страница не скроллилась
+      e.preventDefault();
       const state = player.getPlayerState();
-      if (state === YT.PlayerState.PLAYING) {
-        player.pauseVideo();
-      } else {
-        player.playVideo();
-      }
+      if (state === YT.PlayerState.PLAYING) player.pauseVideo();
+      else player.playVideo();
     }
     
-    // Стрелка вправо: +5 секунд
     if (e.code === 'ArrowRight') {
       e.preventDefault();
       player.seekTo(Math.min(player.getCurrentTime() + 5, player.getDuration()), true);
     }
     
-    // Стрелка влево: -5 секунд
     if (e.code === 'ArrowLeft') {
       e.preventDefault();
       player.seekTo(Math.max(player.getCurrentTime() - 5, 0), true);
