@@ -126,7 +126,8 @@
         seconds: timeToSeconds(c.time)
       }));
       renderCues();
-      document.getElementById('loading').remove();
+      const loadingEl = document.getElementById('loading');
+      if (loadingEl) loadingEl.remove();
     })
     .catch(err => {
       document.getElementById('subtitles').innerHTML =
