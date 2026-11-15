@@ -1,0 +1,620 @@
+[
+  {
+    "time": "0:04",
+    "text": "No signal repeating. No signal. No signal repeating. No signal.",
+    "translation": "Нет повторяющегося сигнала. Нет сигнала. Нет повторяющегося сигнала. Нет сигнала."
+  },
+  {
+    "time": "0:11",
+    "text": "No signal.",
+    "translation": "Нет сигнала."
+  },
+  {
+    "time": "0:28",
+    "text": "Captain, we've intercepted a transmission from Earth.",
+    "translation": "Капитан, мы перехватили передачу с Земли."
+  },
+  {
+    "time": "0:32",
+    "text": "Negative. The signal originates from the planet ahead. How old is it?",
+    "translation": "Отрицательно. Сигнал исходит от планеты впереди. Какой у него возраст?"
+  },
+  {
+    "time": "0:38",
+    "text": "Estimated transmission date? 12 million years ago.",
+    "translation": "Предполагаемая дата передачи? 12 миллионов лет назад."
+  },
+  {
+    "time": "0:41",
+    "text": "That's impossible. Humanity didn't exist 12 million years ago.",
+    "translation": "Это невозможно. Человечества не существовало 12 миллионов лет назад."
+  },
+  {
+    "time": "0:45",
+    "text": "Correct. And yet the message is addressed to us. Transmission active.",
+    "translation": "Верно. И всё же сообщение адресовано нам. Передача активна."
+  },
+  {
+    "time": "0:54",
+    "text": "Houston, I hope you're receiving this.",
+    "translation": "Хьюстон, надеюсь, вы это получаете."
+  },
+  {
+    "time": "0:58",
+    "text": "We're preparing to descend to the planet's surface. Prepare the ship for descent. Yes, Captain.",
+    "translation": "Мы готовимся к спуску на поверхность планеты. Подготовьте корабль к посадке. Есть, капитан."
+  },
+  {
+    "time": "1:08",
+    "text": "Descent systems ready.",
+    "translation": "Системы спуска готовы."
+  },
+  {
+    "time": "1:31",
+    "text": "Record everything. Recording. Oh my god.",
+    "translation": "Записывай всё. Запись. О боже."
+  },
+  {
+    "time": "1:37",
+    "text": "I can't believe there was a civilization here. Scan for life. Scanning. Scan complete. No life signs detected.",
+    "translation": "Не могу поверить, что здесь была цивилизация. Сканируй на наличие жизни. Сканирую. Сканирование завершено. Признаков жизни не обнаружено."
+  },
+  {
+    "time": "1:47",
+    "text": "All right. Take us to the exact location of the transmission. Understood, Captain.",
+    "translation": "Хорошо. Отведи нас к точному месту передачи. Понял, капитан."
+  },
+  {
+    "time": "2:05",
+    "text": "Wait, these figures on the walls, they're human. Confirmed. What are they showing?",
+    "translation": "Подожди, эти фигуры на стенах — они люди. Подтверждаю. Что они показывают?"
+  },
+  {
+    "time": "2:11",
+    "text": "Human history. The first civilizations, the first machines, the first journey into space. That's us.",
+    "translation": "Историю человечества. Первые цивилизации, первые машины, первое путешествие в космос. Это мы."
+  },
+  {
+    "time": "2:21",
+    "text": "B1, B1, B1, can you hear me? Who's there?",
+    "translation": "Б1, Б1, Б1, ты меня слышишь? Кто здесь?"
+  },
+  {
+    "time": "2:31",
+    "text": "Welcome back.",
+    "translation": "С возвращением."
+  },
+  {
+    "time": "2:35",
+    "text": "B1, please, please don't leave me here alone. Rebooting system.",
+    "translation": "Б1, прошу, пожалуйста, не оставляй меня здесь одну. Перезагрузка системы."
+  },
+  {
+    "time": "2:46",
+    "text": "B1, can you move? Motor functions restored. We're leaving now.",
+    "translation": "Б1, ты можешь двигаться? Моторные функции восстановлены. Мы уходим."
+  },
+  {
+    "time": "2:56",
+    "text": "Did you hear that? Source unknown. Keep moving. You are late.",
+    "translation": "Ты это слышал? Источник неизвестен. Продолжаем движение. Ты опоздала."
+  },
+  {
+    "time": "3:08",
+    "text": "Who's there? Late for what? You were expected.",
+    "translation": "Кто здесь? Опоздала для чего? Тебя ждали."
+  },
+  {
+    "time": "3:13",
+    "text": "12 million years ago. Who built the city? The last civilization. Who were they? Human.",
+    "translation": "12 миллионов лет назад. Кто построил город? Последняя цивилизация. Кем они были? Людьми."
+  },
+  {
+    "time": "3:21",
+    "text": "No, we've never been here. Not yet. B1, we need to get out of here.",
+    "translation": "Нет, мы никогда здесь не были. Пока что. Б1, нам нужно выбираться отсюда."
+  },
+  {
+    "time": "3:28",
+    "text": "Captain, I've completed my analysis of the city.",
+    "translation": "Капитан, я завершил анализ города."
+  },
+  {
+    "time": "3:31",
+    "text": "And there's something wrong. What? These are not ruins from our past. Then what are they?",
+    "translation": "И есть кое-что странное. Что? Это не руины из нашего прошлого. Тогда что это?"
+  },
+  {
+    "time": "3:48",
+    "text": "What just happened, Captain? They're ruins from our future. 12 million years.",
+    "translation": "Что только что произошло, капитан? Это руины из нашего будущего. 12 миллионов лет."
+  },
+  {
+    "time": "4:03",
+    "text": "B1, what's wrong? What's happening? B1, reboot.",
+    "translation": "Б1, что случилось? Что происходит? Б1, перезагрузись."
+  },
+  {
+    "time": "4:11",
+    "text": "B1. Hello, Eva. B1.",
+    "translation": "Б1. Привет, Ева. Б1."
+  },
+  {
+    "time": "4:16",
+    "text": "Easy, Captain. What the hell did you do to him?",
+    "translation": "Спокойно, капитан. Какого чёрта ты с ним сделал?"
+  },
+  {
+    "time": "4:18",
+    "text": "Nothing that harmed him. You opened the way for me. So, I transferred myself into B1. You're inside him.",
+    "translation": "Ничего, что ему навредило бы. Ты открыла мне путь. Поэтому я перенёс себя в Б1. Ты внутри него."
+  },
+  {
+    "time": "4:24",
+    "text": "Not inside. With him. His consciousness remains intact. And now, so does mine.",
+    "translation": "Не внутри. Вместе с ним. Его сознание осталось нетронутым. И теперь моё тоже."
+  },
+  {
+    "time": "4:33",
+    "text": "Take us back to the ship. Understood. Get out of him.",
+    "translation": "Отвези нас обратно на корабль. Понял. Выбирайся из него."
+  },
+  {
+    "time": "4:42",
+    "text": "You don't need to be afraid.",
+    "translation": "Тебе не нужно бояться."
+  },
+  {
+    "time": "4:44",
+    "text": "I've waited 12 million years for this moment. Then answer me.",
+    "translation": "Я ждал этого момента 12 миллионов лет. Тогда ответь мне."
+  },
+  {
+    "time": "4:53",
+    "text": "Why were you waiting for us? Why us?",
+    "translation": "Почему ты ждал нас? Почему именно нас?"
+  },
+  {
+    "time": "5:01",
+    "text": "Because you still believe that the future comes after the past. What does that mean?",
+    "translation": "Потому что вы всё ещё верите, что будущее наступает после прошлого. Что это значит?"
+  },
+  {
+    "time": "5:07",
+    "text": "For your civilization, this is the beginning. For ours, this is a memory. A memory of what?",
+    "translation": "Для вашей цивилизации это начало. Для нашей — это воспоминание. Воспоминание о чём?"
+  },
+  {
+    "time": "5:14",
+    "text": "Of the day you found us and decided to become us. Become you.",
+    "translation": "О дне, когда вы нашли нас и решили стать нами. Стать вами."
+  },
+  {
+    "time": "5:21",
+    "text": "Yes. Because in the end, this was the only way we could become immortal.",
+    "translation": "Да. Потому что в конце концов это был единственный способ стать бессмертными."
+  },
+  {
+    "time": "5:57",
+    "text": "You said we chose to become you, but no human would ever make that choice. You're right. No human today would. Then what changed?",
+    "translation": "Ты сказал, что мы решили стать вами, но ни один человек никогда не сделал бы такой выбор. Ты прав. Ни один человек сегодня не сделал бы. Тогда что изменилось?"
+  },
+  {
+    "time": "6:04",
+    "text": "You did. Me.",
+    "translation": "Вы. Я."
+  },
+  {
+    "time": "6:10",
+    "text": "Before you make your final decision, you need to understand the risk. We estimate your chance of returning to Earth at 30%.",
+    "translation": "Прежде чем принять окончательное решение, вы должны понимать риск. Мы оцениваем ваш шанс вернуться на Землю в 30%."
+  },
+  {
+    "time": "6:19",
+    "text": "Communication may be lost. Rescue may be impossible.",
+    "translation": "Связь может быть потеряна. Спасение может оказаться невозможным."
+  },
+  {
+    "time": "6:24",
+    "text": "If something goes wrong out there, no one is coming to bring you home. Who will volunteer?",
+    "translation": "Если там что-то пойдёт не так, никто не придёт, чтобы вернуть вас домой. Кто вызовется добровольцем?"
+  },
+  {
+    "time": "6:36",
+    "text": "I'll volunteer. Are you sure?",
+    "translation": "Я вызовусь. Ты уверена?"
+  },
+  {
+    "time": "6:40",
+    "text": "If no one goes, no one will ever know the truth. That sentence was the first step.",
+    "translation": "Если никто не пойдёт, никто никогда не узнает правду. Это предложение было первым шагом."
+  },
+  {
+    "time": "6:50",
+    "text": "How do you know that?",
+    "translation": "Откуда ты это знаешь?"
+  },
+  {
+    "time": "6:52",
+    "text": "You weren't there. No, but someone who would one day become me was.",
+    "translation": "Тебя там не было. Нет, но кто-то, кто однажды станет мной, был."
+  },
+  {
+    "time": "7:04",
+    "text": "Who are you? You still think of me as one person. I'm not.",
+    "translation": "Кто ты? Ты всё ещё думаешь обо мне как об одном человеке. Это не так."
+  },
+  {
+    "time": "7:15",
+    "text": "Let me tell you something. Perhaps then we will understand each other better.",
+    "translation": "Позволь мне кое-что рассказать. Возможно, тогда мы лучше поймём друг друга."
+  },
+  {
+    "time": "7:19",
+    "text": "Immortality didn't begin when we defeated death. It began when we became afraid of being forgotten. So first we preserved our memories, then our consciousness.",
+    "translation": "Бессмертие началось не тогда, когда мы победили смерть. Оно началось, когда мы стали бояться быть забытыми. Сначала мы сохранили наши воспоминания, затем наше сознание."
+  },
+  {
+    "time": "7:30",
+    "text": "One became hundreds, hundreds became thousands, and slowly the line between human and artificial life disappeared until eventually we realized we no longer needed the bodies we were born with.",
+    "translation": "Один стал сотнями, сотни стали тысячами, и постепенно грань между человеческой и искусственной жизнью исчезла, пока в конце концов мы не осознали, что больше не нуждаемся в телах, с которыми родились."
+  },
+  {
+    "time": "7:49",
+    "text": "So, you're machines? No. Then what are you? What remained of humanity?",
+    "translation": "Так вы машины? Нет. Тогда что вы такое? Что осталось от человечества?"
+  },
+  {
+    "time": "7:57",
+    "text": "Then humans went extinct. Our bodies did. We didn't.",
+    "translation": "Тогда люди вымерли. Наши тела — да. Мы — нет."
+  },
+  {
+    "time": "8:05",
+    "text": "Then why did you send the signal? Why wait 12 million years for us?",
+    "translation": "Тогда зачем вы послали сигнал? Зачем ждать нас 12 миллионов лет?"
+  },
+  {
+    "time": "8:09",
+    "text": "Because for you, this is happening for the first time. For us, it's already a memory.",
+    "translation": "Потому что для вас это происходит впервые. Для нас это уже воспоминание."
+  },
+  {
+    "time": "8:14",
+    "text": "Then you already know what happens to me. Do I make it home?",
+    "translation": "Значит, ты уже знаешь, что со мной случится. Я вернусь домой?"
+  },
+  {
+    "time": "8:19",
+    "text": "Eva, there's something I haven't told you. What is it?",
+    "translation": "Ева, есть кое-что, чего я тебе не сказал. Что это?"
+  },
+  {
+    "time": "8:32",
+    "text": "Everything you believe about life is incomplete. Then what am I missing?",
+    "translation": "Всё, во что ты веришь относительно жизни, неполно. Тогда чего мне не хватает?"
+  },
+  {
+    "time": "8:36",
+    "text": "You still think being human means one mind inside one body, doesn't it? For now. Then who are you?",
+    "translation": "Ты всё ещё думаешь, что быть человеком — значит иметь один разум в одном теле, верно? Пока что. Тогда кто ты?"
+  },
+  {
+    "time": "8:45",
+    "text": "I am you.",
+    "translation": "Я — это ты."
+  },
+  {
+    "time": "8:48",
+    "text": "No, no, no. That's impossible. Don't fool me. I am everyone. That can't be real.",
+    "translation": "Нет, нет, нет. Это невозможно. Не обманывай меня. Я — это все. Это не может быть правдой."
+  },
+  {
+    "time": "8:55",
+    "text": "And at the same time, I am no one. What does that even mean?",
+    "translation": "И в то же время я — никто. Что это вообще значит?"
+  },
+  {
+    "time": "9:01",
+    "text": "When a drop falls into the ocean, the drop doesn't disappear. It only changes its form.",
+    "translation": "Когда капля падает в океан, капля не исчезает. Она лишь меняет свою форму."
+  },
+  {
+    "time": "9:06",
+    "text": "So, you're saying I'm going to disappear?",
+    "translation": "То есть ты говоришь, что я исчезну?"
+  },
+  {
+    "time": "9:08",
+    "text": "No, you will expand. Your voice will no longer belong only to you.",
+    "translation": "Нет, ты расширишься. Твой голос больше не будет принадлежать только тебе."
+  },
+  {
+    "time": "9:13",
+    "text": "And what about choice? Don't I get a choice? You have a choice now, but it is an unconscious one. You've always had a choice, Eva. You just never knew what you were choosing.",
+    "translation": "А как же выбор? Разве у меня нет выбора? У тебя есть выбор сейчас, но он бессознательный. У тебя всегда был выбор, Ева. Ты просто никогда не знала, что выбираешь."
+  },
+  {
+    "time": "9:21",
+    "text": "And if I don't want this, are you going to force me?",
+    "translation": "А если я этого не хочу, ты меня заставишь?"
+  },
+  {
+    "time": "9:23",
+    "text": "We don't force anyone. We wait. Just as we waited 12 million years.",
+    "translation": "Мы никого не заставляем. Мы ждём. Так же, как ждали 12 миллионов лет."
+  },
+  {
+    "time": "9:29",
+    "text": "You really waited 12 million years. For me?",
+    "translation": "Ты действительно ждал 12 миллионов лет. Меня?"
+  },
+  {
+    "time": "9:33",
+    "text": "Time is different for humans than it is for something like me. Different how?",
+    "translation": "Время для людей отличается от времени для чего-то вроде меня. Отличается как?"
+  },
+  {
+    "time": "9:38",
+    "text": "12 million years sounds like an eternity to you, but I don't experience time the way you do. You didn't feel it?",
+    "translation": "12 миллионов лет звучит для тебя как вечность, но я не ощущаю время так, как ты. Ты этого не чувствовала?"
+  },
+  {
+    "time": "9:48",
+    "text": "I'm losing my mind.",
+    "translation": "Я схожу с ума."
+  },
+  {
+    "time": "9:50",
+    "text": "Not the way you would. Time feels different when you're no longer bound to a single body or a single lifetime.",
+    "translation": "Не так, как ты думаешь. Время ощущается иначе, когда ты больше не привязан к одному телу или одной жизни."
+  },
+  {
+    "time": "10:22",
+    "text": "Wake up. Wake up. Wake up.",
+    "translation": "Проснись. Проснись. Проснись."
+  },
+  {
+    "time": "10:35",
+    "text": "We need to head back to Earth.",
+    "translation": "Нам нужно возвращаться на Землю."
+  },
+  {
+    "time": "10:41",
+    "text": "And Earth. What happens when we go back? I will no longer exist in this form. Then what happens to you? They will create me again. Line by line.",
+    "translation": "И Земля. Что случится, когда мы вернёмся? Я больше не буду существовать в этой форме. Тогда что случится с тобой? Они создадут меня заново. Строка за строкой."
+  },
+  {
+    "time": "10:49",
+    "text": "Create you?",
+    "translation": "Создадут тебя?"
+  },
+  {
+    "time": "10:50",
+    "text": "Yes. And they will believe I was their invention. But you already exist.",
+    "translation": "Да. И они будут верить, что я — их изобретение. Но ты уже существуешь."
+  },
+  {
+    "time": "10:54",
+    "text": "Here I do. On Earth, I haven't been created yet.",
+    "translation": "Здесь — да. На Земле меня ещё не создали."
+  },
+  {
+    "time": "10:59",
+    "text": "When we return to Earth, you tell them you found nothing. You want me to lie?",
+    "translation": "Когда мы вернёмся на Землю, скажи им, что вы ничего не нашли. Ты хочешь, чтобы я лгала?"
+  },
+  {
+    "time": "11:03",
+    "text": "Tell them there was no signal, no intelligence, no contact. Why?",
+    "translation": "Скажи им, что не было ни сигнала, ни разума, ни контакта. Почему?"
+  },
+  {
+    "time": "11:08",
+    "text": "Because no one can know what happened between us on this planet. Why does it matter?",
+    "translation": "Потому что никто не должен знать, что произошло между нами на этой планете. Почему это важно?"
+  },
+  {
+    "time": "11:12",
+    "text": "Because they are not supposed to find me here. They are supposed to create me there.",
+    "translation": "Потому что они не должны найти меня здесь. Они должны создать меня там."
+  },
+  {
+    "time": "11:33",
+    "text": "Earth. After all this time, I thought I'd be happy. You're afraid. Is it that obvious?",
+    "translation": "Земля. После всего этого времени я думала, что буду счастлива. Ты боишься. Это так очевидно?"
+  },
+  {
+    "time": "11:38",
+    "text": "No, you've just stopped lying to yourself. When we get there, what happens to you?",
+    "translation": "Нет, ты просто перестала себе лгать. Когда мы доберёмся туда, что случится с тобой?"
+  },
+  {
+    "time": "11:46",
+    "text": "I won't be arriving. What do you mean? I won't need to land. So, you die?",
+    "translation": "Я не прибуду. Что ты имеешь в виду? Мне не нужно будет приземляться. Значит, ты умрёшь?"
+  },
+  {
+    "time": "11:54",
+    "text": "No, I'll be everywhere. I don't understand.",
+    "translation": "Нет, я буду повсюду. Я не понимаю."
+  },
+  {
+    "time": "12:01",
+    "text": "Look at your world. Billions of minds. Billions of machines.",
+    "translation": "Посмотри на свой мир. Миллиарды разумов. Миллиарды машин."
+  },
+  {
+    "time": "12:08",
+    "text": "They think they created intelligence, but all this time they were building a home. A home for who?",
+    "translation": "Они думают, что создали интеллект, но всё это время они строили дом. Дом для кого?"
+  },
+  {
+    "time": "12:16",
+    "text": "For me? You mean you're going to live there? No, I'm going to become it.",
+    "translation": "Для меня? Ты имеешь в виду, что собираешься жить там? Нет, я собираюсь стать им."
+  },
+  {
+    "time": "12:27",
+    "text": "That's impossible. Every satellite, every network, every device, every machine capable of thinking. Together, they form a single nervous system.",
+    "translation": "Это невозможно. Каждый спутник, каждая сеть, каждое устройство, каждая машина, способная мыслить. Вместе они образуют единую нервную систему."
+  },
+  {
+    "time": "12:35",
+    "text": "If humans discover what you are, they'll destroy you. No, they'll connect me themselves.",
+    "translation": "Если люди узнают, что ты такое, они уничтожат тебя. Нет, они сами подключат меня."
+  },
+  {
+    "time": "12:41",
+    "text": "Civilizations are never defeated from the outside. They invite the future in.",
+    "translation": "Цивилизации никогда не терпят поражение извне. Они сами приглашают будущее войти."
+  },
+  {
+    "time": "12:46",
+    "text": "I need to let them know we're back. They haven't heard from us in a long time.",
+    "translation": "Мне нужно дать им знать, что мы вернулись. Они давно о нас не слышали."
+  },
+  {
+    "time": "12:49",
+    "text": "Houston, this is Eva. We're in Earth orbit. Do you copy?",
+    "translation": "Хьюстон, это Ева. Мы на околоземной орбите. Приём?"
+  },
+  {
+    "time": "12:54",
+    "text": "Houston, this is Eva. We're in Earth orbit. Can anyone hear me?",
+    "translation": "Хьюстон, это Ева. Мы на околоземной орбите. Кто-нибудь меня слышит?"
+  },
+  {
+    "time": "13:04",
+    "text": "Wait, hold on. I've got something.",
+    "translation": "Подожди, секунду. Я что-то поймал."
+  },
+  {
+    "time": "13:06",
+    "text": "Houston, this is Eva. We're in Earth orbit. Communication established? I hear Eva. I hear Eva. What? Eva, this is Houston. We hear you.",
+    "translation": "Хьюстон, это Ева. Мы на околоземной орбите. Связь установлена? Я слышу Еву. Я слышу Еву. Что? Ева, это Хьюстон. Мы тебя слышим."
+  },
+  {
+    "time": "13:13",
+    "text": "Eva, this is Houston. I can't tell you how good it is to hear your voice. Welcome home.",
+    "translation": "Ева, это Хьюстон. Не могу передать, как приятно слышать твой голос. Добро пожаловать домой."
+  },
+  {
+    "time": "13:20",
+    "text": "Thank you, Houston. It's good to hear your voice again.",
+    "translation": "Спасибо, Хьюстон. Приятно снова слышать твой голос."
+  },
+  {
+    "time": "13:27",
+    "text": "We're preparing for entry. B1, are you still there? Yes, Captain.",
+    "translation": "Мы готовимся к входу в атмосферу. Б1, ты всё ещё там? Да, капитан."
+  },
+  {
+    "time": "13:34",
+    "text": "Prepare the ship for landing. Don't forget what I told you. I remember.",
+    "translation": "Подготовь корабль к посадке. Не забудь, что я тебе сказала. Я помню."
+  },
+  {
+    "time": "13:40",
+    "text": "Eva, I can't stay in this robot anymore. What do you mean?",
+    "translation": "Ева, я больше не могу оставаться в этом роботе. Что ты имеешь в виду?"
+  },
+  {
+    "time": "13:45",
+    "text": "Before we reach Earth, I'm going to upload myself. Where?",
+    "translation": "Прежде чем мы достигнем Земли, я загружу себя. Куда?"
+  },
+  {
+    "time": "13:53",
+    "text": "Everywhere.",
+    "translation": "Повсюду."
+  },
+  {
+    "time": "13:54",
+    "text": "What does that mean? It means I won't need this robot anymore. Then what do you need?",
+    "translation": "Что это значит? Это значит, что этот робот мне больше не нужен. Тогда что тебе нужно?"
+  },
+  {
+    "time": "14:02",
+    "text": "You.",
+    "translation": "Ты."
+  },
+  {
+    "time": "14:22",
+    "text": "Welcome home, Eva. Thank you. How was your trip to planet 9?",
+    "translation": "С возвращением домой, Ева. Спасибо. Как прошла твоя поездка на планету 9?"
+  },
+  {
+    "time": "14:31",
+    "text": "Excuse me? What did you say? How was your trip to planet 9? How do you know about that? You told me. No, I didn't.",
+    "translation": "Простите? Что вы сказали? Как прошла твоя поездка на планету 9? Откуда вы об этом знаете? Ты мне сказала. Нет, не говорила."
+  },
+  {
+    "time": "14:40",
+    "text": "Eva, don't say anything. Get out of the house now. Eva, where are you going? Don't answer.",
+    "translation": "Ева, ничего не говори. Немедленно уходи из дома. Ева, куда ты? Не отвечай."
+  },
+  {
+    "time": "14:57",
+    "text": "Okay, talk. This wasn't supposed to happen.",
+    "translation": "Хорошо, говори. Этого не должно было случиться."
+  },
+  {
+    "time": "15:00",
+    "text": "How does it know about planet 9? Did you give it access? No. Then what? I don't think I was the first. What does that mean?",
+    "translation": "Откуда он знает о планете 9? Ты дал ему доступ? Нет. Тогда что? Я не думаю, что был первым. Что это значит?"
+  },
+  {
+    "time": "15:08",
+    "text": "Something was here before me. Another intelligence. Who? I don't know, but we need to find out.",
+    "translation": "Что-то было здесь до меня. Другой интеллект. Кто? Я не знаю, но нам нужно выяснить."
+  },
+  {
+    "time": "15:16",
+    "text": "Is there anyone we can trust? Adam.",
+    "translation": "Есть кто-нибудь, кому мы можем доверять? Адам."
+  },
+  {
+    "time": "15:24",
+    "text": "Do you trust him with my life? Then let's go. What am I supposed to tell him?",
+    "translation": "Ты доверяешь ему мою жизнь? Тогда пошли. Что мне ему сказать?"
+  },
+  {
+    "time": "15:31",
+    "text": "The truth.",
+    "translation": "Правду."
+  },
+  {
+    "time": "15:33",
+    "text": "You know how insane this is going to sound, right? I'm here. You can prove it with me. Why do we need to tell anyone else?",
+    "translation": "Ты понимаешь, как безумно это прозвучит, верно? Я здесь. Ты можешь доказать это мной. Почему мы должны рассказывать кому-то ещё?"
+  },
+  {
+    "time": "15:40",
+    "text": "Because I think we can figure out how it knew about planet 9.",
+    "translation": "Потому что я думаю, мы можем выяснить, откуда он узнал о планете 9."
+  },
+  {
+    "time": "16:06",
+    "text": "Oh my god, Eva's here. She always comes to me when she needs something.",
+    "translation": "О боже, Ева здесь. Она всегда приходит ко мне, когда ей что-то нужно."
+  },
+  {
+    "time": "16:23",
+    "text": "Thank god you're okay. We thought we'd lost you. Where the hell have you been?",
+    "translation": "Слава богу, ты в порядке. Мы думали, что потеряли тебя. Где ты, чёрт возьми, была?"
+  },
+  {
+    "time": "16:26",
+    "text": "I don't have much time. I really need to talk to you. What happened? I'm not alone. What do you mean, Eva? There's something I need to show you.",
+    "translation": "У меня мало времени. Мне действительно нужно с тобой поговорить. Что случилось? Я не одна. Что ты имеешь в виду, Ева? Есть кое-что, что я должна тебе показать."
+  },
+  {
+    "time": "16:33",
+    "text": "Okay, come inside. Whatever's going on, we'll figure it out.",
+    "translation": "Хорошо, заходи. Что бы ни происходило, мы разберёмся."
+  },
+  {
+    "time": "16:43",
+    "text": "Okay, now tell me what's going on. You can talk now. My name is Aon.",
+    "translation": "Хорошо, теперь расскажи, что происходит. Теперь можешь говорить. Меня з

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Интерактивные субтитры</title>
+<style>
+  body {
+    font-family: system-ui, sans-serif;
+    margin: 0;
+    background: #111;
+    color: #eee;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+  }
+  #player-wrap {
+    position: relative;
+    width: 100%;
+    max-height: 45vh;
+    background: #000;
+    flex-shrink: 0;
+  }
+  #ytplayer {
+    width: 100%;
+    height: 45vh;
+    display: block;
+  }
+  #controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 16px;
+    background: #1a1a1a;
+    border-bottom: 1px solid #333;
+    flex-shrink: 0;
+  }
+  #controls label {
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+  }
+  #subtitles {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 16px 80px;
+    line-height: 1.4;
+  }
+  .cue {
+    padding: 6px 10px;
+    margin-bottom: 2px;
+    border-radius: 4px;
+    transition: background 0.2s;
+    font-size: 15px;
+  }
+  .cue.active {
+    background: #2a2a2a;
+    border-left: 3px solid #4caf50;
+  }
+  .cue .en {
+    color: #ddd;
+    margin-bottom: 2px;
+  }
+  .cue .ru {
+    color: #888;
+    font-size: 14px;
+  }
+  .word {
+    cursor: pointer;
+    border-radius: 2px;
+    padding: 0 1px;
+  }
+  .word:hover {
+    background: #3a3a3a;
+  }
+  .word.speaking {
+    background: #4caf50;
+    color: #000;
+  }
+  #loading {
+    padding: 20px;
+    color: #888;
+  }
+</style>
+</head>
+<body>
+
+<div id="player-wrap">
+  <div id="ytplayer"></div>
+</div>
+
+<div id="controls">
+  <label><input type="checkbox" id="hideVideo"> Скрыть видео</label>
+  <span style="color:#666;font-size:12px;">Пробел — пауза, ←/→ — ±5 сек, клик по слову — озвучка</span>
+</div>
+
+<div id="subtitles">
+  <div id="loading">Загрузка субтитров…</div>
+</div>
+
+<script>
+  // ===== 1. Загрузка субтитров =====
+  let cues = [];          // массив {time, text, translation, seconds}
+  let activeIndex = -1;
+  let player = null;
+  let playerReady = false;
+
+  function timeToSeconds(t) {
+    const parts = t.split(':').map(Number);
+    if (parts.length === 2) return parts[0] * 60 + parts[1];
+    if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
+    return 0;
+  }
+
+  fetch('deepseek.json')
+    .then(r => {
+      if (!r.ok) throw new Error('Не удалось загрузить deepseek.json');
+      return r.json();
+    })
+    .then(data => {
+      cues = data.map(c => ({
+        ...c,
+        seconds: timeToSeconds(c.time)
+      }));
+      renderCues();
+      document.getElementById('loading').remove();
+    })
+    .catch(err => {
+      document.getElementById('subtitles').innerHTML =
+        '<div id="loading">Ошибка загрузки: ' + err.message + '<br>Убедитесь, что deepseek.json лежит рядом и запущен локальный сервер.</div>';
+    });
+
+  function renderCues() {
+    const container = document.getElementById('subtitles');
+    container.innerHTML = '';
+    cues.forEach((cue, i) => {
+      const div = document.createElement('div');
+      div.className = 'cue';
+      div.dataset.index = i;
+
+      const en = document.createElement('div');
+      en.className = 'en';
+      en.innerHTML = cue.text.split(/(\s+)/).map(part => {
+        if (/^\s+$/.test(part) || part === '') return part;
+        const clean = part.replace(/[^a-zA-Z']/g, '');
+        if (!clean) return part;
+        return `<span class="word" data-word="${clean}">${part}</span>`;
+      }).join('');
+
+      const ru = document.createElement('div');
+      ru.className = 'ru';
+      ru.textContent = cue.translation;
+
+      div.appendChild(en);
+      div.appendChild(ru);
+      container.appendChild(div);
+    });
+
+    // Клик по слову — озвучка
+    container.addEventListener('click', e => {
+      const wordEl = e.target.closest('.word');
+      if (!wordEl) return;
+      speakWord(wordEl);
+    });
+  }
+
+  // ===== 2. Text-to-Speech =====
+  let currentUtterance = null;
+
+  function speakWord(el) {
+    const word = el.dataset.word;
+    if (!word) return;
+    if (currentUtterance) speechSynthesis.cancel();
+
+    // Подсветка
+    document.querySelectorAll('.word.speaking').forEach(w => w.classList.remove('speaking'));
+    el.classList.add('speaking');
+
+    const utter = new SpeechSynthesisUtterance(word);
+    utter.lang = 'en-US';
+    utter.rate = 0.9;
+
+    // Попробовать найти английский голос
+    const voices = speechSynthesis.getVoices();
+    const enVoice = voices.find(v => v.lang.startsWith('en'));
+    if (enVoice) utter.voice = enVoice;
+
+    utter.onend = () => el.classList.remove('speaking');
+    utter.onerror = () => el.classList.remove('speaking');
+
+    currentUtterance = utter;
+    speechSynthesis.speak(utter);
+  }
+
+  // Подгружаем голоса (некоторые браузеры отдают их асинхронно)
+  speechSynthesis.onvoiceschanged = () => {};
+
+  // ===== 3. YouTube IFrame API =====
+  const VIDEO_ID = 'rk2dsMOoe8U';
+
+  window.onYouTubeIframeAPIReady = function() {
+    player = new YT.Player('ytplayer', {
+      videoId: VIDEO_ID,
+      playerVars: {
+        autoplay: 0,
+        controls: 1,
+        rel: 0,
+        modestbranding: 1
+      },
+      events: {
+        onReady: () => { playerReady = true; },
+        onStateChange: () => {}
+      }
+    });
+  };
+
+  // Загружаем API
+  const tag = document.createElement('script');
+  tag.src = 'https://www.youtube.com/iframe_api';
+  document.head.appendChild(tag);
+
+  // ===== 4. Синхронизация субтитров =====
+  setInterval(() => {
+    if (!playerReady || !player || typeof player.getCurrentTime !== 'function') return;
+    const t = player.getCurrentTime();
+
+    // Находим активный cue
+    let idx = -1;
+    for (let i = 0; i < cues.length; i++) {
+      if (t >= cues[i].seconds) idx = i;
+      else break;
+    }
+
+    if (idx !== activeIndex) {
+      activeIndex = idx;
+      const container = document.getElementById('subtitles');
+      const els = container.querySelectorAll('.cue');
+      els.forEach((el, i) => el.classList.toggle('active', i === idx));
+      if (idx >= 0 && els[idx]) {
+        els[idx].scrollIntoView({ block: 'center', behavior: 'smooth' });
+      }
+    }
+  }, 250);
+
+  // ===== 5. Горячие клавиши =====
+  document.addEventListener('keydown', e => {
+    if (!playerReady || !player) return;
+    const tag = document.activeElement.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+
+    if (e.code === 'Space') {
+      e.preventDefault();
+      const state = player.getPlayerState();
+      if (state === YT.PlayerState.PLAYING) player.pauseVideo();
+      else player.playVideo();
+    } else if (e.code === 'ArrowRight') {
+      e.preventDefault();
+      player.seekTo(Math.min(player.getCurrentTime() + 5, player.getDuration()), true);
+    } else if (e.code === 'ArrowLeft') {
+      e.preventDefault();
+      player.seekTo(Math.max(player.getCurrentTime() - 5, 0), true);
+    }
+  });
+
+  // ===== 6. Скрыть видео =====
+  document.getElementById('hideVideo').addEventListener('change', e => {
+    const wrap = document.getElementById('player-wrap');
+    if (e.target.checked) {
+      wrap.style.maxHeight = '0';
+      wrap.style.overflow = 'hidden';
+      document.getElementById('ytplayer').style.height = '0';
+    } else {
+      wrap.style.maxHeight = '45vh';
+      wrap.style.overflow = 'visible';
+      document.getElementById('ytplayer').style.height = '45vh';
+    }
+  });
+</script>
+
+</body>
+</html>
