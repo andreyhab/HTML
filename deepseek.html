@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>Интерактивные субтитры</title>
+<title>Плавные субтитры</title>
 <style>
   body {
     font-family: system-ui, sans-serif;
@@ -17,14 +17,14 @@
   #player-wrap {
     position: relative;
     width: 100%;
-    max-height: 45vh;
+    max-height: 40vh;
     background: #000;
     flex-shrink: 0;
     transition: max-height 0.3s;
   }
   #ytplayer {
     width: 100%;
-    height: 45vh;
+    height: 40vh;
     display: block;
     transition: height 0.3s;
   }
@@ -36,6 +36,7 @@
     background: #1a1a1a;
     border-bottom: 1px solid #333;
     flex-shrink: 0;
+    flex-wrap: wrap;
   }
   #toggleVideoBtn {
     cursor: pointer;
@@ -47,49 +48,64 @@
     font-size: 14px;
     outline: none;
   }
-  #toggleVideoBtn:hover {
-    background: #444;
-  }
-  #toggleVideoBtn:focus {
-    border-color: #4caf50;
-  }
-  .hint {
-    color: #666;
-    font-size: 12px;
-  }
+  #toggleVideoBtn:hover { background: #444; }
+  #toggleVideoBtn:focus { border-color: #4caf50; }
+  
+  .hint { color: #666; font-size: 12px; }
+
+  /* Контейнер субтитров */
   #subtitles {
     flex: 1;
     overflow-y: auto;
-    padding: 8px 16px 80px;
-    line-height: 1.4;
+    /* Огромные отступы, чтобы любой блок мог оказаться в центре */
+    padding: 30vh 16px 50vh; 
+    line-height: 1.5;
+    /* Отключаем стандартную плавность, будем управлять скроллом вручную */
+    scroll-behavior: auto; 
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
+    mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
   }
+
   .cue {
-    padding: 6px 10px;
-    margin-bottom: 2px;
-    border-radius: 4px;
-    transition: background 0.2s;
-    font-size: 15px;
-    border-left: 3px solid transparent;
-    cursor: pointer; /* Курсор-указатель, чтобы было понятно, что можно кликать */
+    padding: 12px 20px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    transition: opacity 0.4s, background 0.4s;
+    font-size: 18px;
+    cursor: pointer;
+    opacity: 0.2; /* Неактивные блоки сильно тусклые */
+    text-align: center;
+    transform: scale(0.95); /* Неактивные чуть меньше */
+    transition: all 0.4s ease-out;
   }
+
   .cue:hover {
-    background: #222;
+    opacity: 0.6;
+    background: #1a1a1a;
   }
+
   .cue.active {
-    background: #2a2a2a;
-    border-left-color: #4caf50;
+    opacity: 1;
+    transform: scale(1); /* Активный блок увеличивается */
+    background: transparent; /* Убрали фон, чтобы не было прямоугольников */
   }
+
   .cue .en {
-    color: #ddd;
-    margin-bottom: 2px;
+    color: #fff;
+    margin-bottom: 6px;
+    font-weight: 600;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.8);
   }
   .cue .ru {
-    color: #888;
-    font-size: 14px;
+    color: #bbb;
+    font-size: 16px;
+    font-weight: 400;
   }
+  
   #loading {
     padding: 20px;
     color: #888;
+    text-align: center;
   }
 </style>
 </head>
@@ -101,7 +117,7 @@
 
 <div id="controls">
   <button id="toggleVideoBtn">Скрыть видео (Enter)</button>
-  <span class="hint">Пробел — пауза, ←/→ — ±5 сек, клик по субтитру — перемотка</span>
+  <span class="hint">Пробел — пауза, ←/→ — ±5 сек, клик по тексту — перемотка</span>
 </div>
 
 <div id="subtitles">
@@ -109,7 +125,6 @@
 </div>
 
 <script>
-  // ===== 1. Загрузка субтитров =====
   let cues = [];
   let activeIndex = -1;
   let player = null;
@@ -133,7 +148,6 @@
         seconds: timeToSeconds(c.time)
       }));
       renderCues();
-      
       const loadingEl = document.getElementById('loading');
       if (loadingEl) loadingEl.remove();
     })
@@ -141,7 +155,7 @@
       const subDiv = document.getElementById('subtitles');
       if (subDiv) {
         subDiv.innerHTML =
-          '<div id="loading">Ошибка загрузки: ' + err.message + '<br>Убедитесь, что deepseek.json лежит рядом и запущен сервер.</div>';
+          '<div id="loading">Ошибка загрузки: ' + err.message + '<br>Убедитесь, что deepseek.json лежит рядом.</div>';
       }
     });
 
@@ -152,7 +166,7 @@
       const div = document.createElement('div');
       div.className = 'cue';
       div.dataset.index = i;
-      div.dataset.time = cue.seconds; // Сохраняем время начала для перемотки
+      div.dataset.time = cue.seconds;
 
       const en = document.createElement('div');
       en.className = 'en';
@@ -167,7 +181,7 @@
       container.appendChild(div);
     });
 
-    // Клик по блоку субтитров — перемотка
+    // Клик — перемотка на начало блока
     container.addEventListener('click', e => {
       const cueEl = e.target.closest('.cue');
       if (!cueEl) return;
@@ -175,7 +189,6 @@
       const timeToSeek = parseFloat(cueEl.dataset.time);
       if (playerReady && player && typeof player.seekTo === 'function') {
         player.seekTo(timeToSeek, true);
-        // Включаем воспроизведение, если на паузе
         if (player.getPlayerState() !== YT.PlayerState.PLAYING) {
           player.playVideo();
         }
@@ -183,52 +196,84 @@
     });
   }
 
-  // ===== 2. YouTube IFrame API =====
+  // YouTube API
   const VIDEO_ID = 'rk2dsMOoe8U';
-
   window.onYouTubeIframeAPIReady = function() {
     player = new YT.Player('ytplayer', {
       videoId: VIDEO_ID,
-      playerVars: {
-        autoplay: 0,
-        controls: 1,
-        rel: 0,
-        modestbranding: 1
-      },
-      events: {
-        onReady: () => { playerReady = true; },
-        onStateChange: () => {}
-      }
+      playerVars: { autoplay: 0, controls: 1, rel: 0, modestbranding: 1 },
+      events: { onReady: () => { playerReady = true; } }
     });
   };
-
   const tag = document.createElement('script');
   tag.src = 'https://www.youtube.com/iframe_api';
   document.head.appendChild(tag);
 
-  // ===== 3. Синхронизация субтитров =====
-  setInterval(() => {
-    if (!playerReady || !player || typeof player.getCurrentTime !== 'function') return;
-    const t = player.getCurrentTime();
+  // ==========================================
+  // НОВАЯ ЛОГИКА ПЛАВНОЙ СИНХРОНИЗАЦИИ
+  // ==========================================
+  
+  let currentScrollTop = 0; // Текущее положение скролла
+  let targetScrollTop = 0;  // Целевое положение скролла
 
+  function updateSubtitlePosition() {
+    if (!playerReady || !player || typeof player.getCurrentTime !== 'function') {
+      requestAnimationFrame(updateSubtitlePosition);
+      return;
+    }
+
+    const currentTime = player.getCurrentTime();
+
+    // 1. Находим активный блок
     let idx = -1;
     for (let i = 0; i < cues.length; i++) {
-      if (t >= cues[i].seconds) idx = i;
+      if (currentTime >= cues[i].seconds) idx = i;
       else break;
     }
 
+    // 2. Обновляем классы (если индекс изменился)
     if (idx !== activeIndex) {
       activeIndex = idx;
-      const container = document.getElementById('subtitles');
-      const els = container.querySelectorAll('.cue');
+      const els = document.querySelectorAll('.cue');
       els.forEach((el, i) => el.classList.toggle('active', i === idx));
-      if (idx >= 0 && els[idx]) {
-        els[idx].scrollIntoView({ block: 'center', behavior: 'smooth' });
+    }
+
+    // 3. Вычисляем целевой скролл для ЦЕНТРИРОВАНИЯ
+    const container = document.getElementById('subtitles');
+    if (container && idx !== -1) {
+      const currentEl = container.querySelector(`.cue[data-index="${idx}"]`);
+      
+      if (currentEl) {
+        // Получаем координаты центра блока относительно контейнера
+        const elCenter = currentEl.offsetTop + currentEl.offsetHeight / 2;
+        
+        // Целевая позиция скролла: центрируем блок
+        targetScrollTop = elCenter - (container.clientHeight / 2);
       }
     }
-  }, 250);
 
-  // ===== 4. Управление видео (скрыть/показать) =====
+    // 4. ПЛАВНАЯ ПРОКРУТКА (интерполяция)
+    // Вместо мгновенного прыжка, мы каждый кадр сдвигаем скролл на 10% от разницы
+    // Это создает идеально плавное "догоняние" без рывков
+    const diff = targetScrollTop - container.scrollTop;
+    
+    // Если разница очень маленькая, просто приравниваем (чтобы не было микро-дрожания)
+    if (Math.abs(diff) < 0.5) {
+      container.scrollTop = targetScrollTop;
+    } else {
+      container.scrollTop += diff * 0.1; // Коэффициент плавности (0.1 = 10% за кадр)
+    }
+
+    requestAnimationFrame(updateSubtitlePosition);
+  }
+
+  // Запуск цикла синхронизации
+  setTimeout(() => {
+    requestAnimationFrame(updateSubtitlePosition);
+  }, 1000);
+
+
+  // ===== Управление видео =====
   let isVideoHidden = false;
   const videoBtn = document.getElementById('toggleVideoBtn');
   const playerWrap = document.getElementById('player-wrap');
@@ -242,9 +287,9 @@
       ytPlayerDiv.style.height = '0';
       videoBtn.textContent = 'Показать видео (Enter)';
     } else {
-      playerWrap.style.maxHeight = '45vh';
+      playerWrap.style.maxHeight = '40vh';
       playerWrap.style.overflow = 'visible';
-      ytPlayerDiv.style.height = '45vh';
+      ytPlayerDiv.style.height = '40vh';
       videoBtn.textContent = 'Скрыть видео (Enter)';
     }
     videoBtn.blur();
@@ -252,10 +297,9 @@
 
   videoBtn.addEventListener('click', toggleVideoVisibility);
 
-  // ===== 5. Горячие клавиши =====
+  // ===== Горячие клавиши =====
   document.addEventListener('keydown', e => {
     if (!playerReady || !player) return;
-    
     const tag = document.activeElement.tagName;
     if (tag === 'INPUT' || tag === 'TEXTAREA') return;
 
