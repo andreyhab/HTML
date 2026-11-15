@@ -70,6 +70,10 @@
     transition: background 0.2s;
     font-size: 15px;
     border-left: 3px solid transparent;
+    cursor: pointer; /* Курсор-указатель, чтобы было понятно, что можно кликать */
+  }
+  .cue:hover {
+    background: #222;
   }
   .cue.active {
     background: #2a2a2a;
@@ -82,18 +86,6 @@
   .cue .ru {
     color: #888;
     font-size: 14px;
-  }
-  .word {
-    cursor: pointer;
-    border-radius: 2px;
-    padding: 0 1px;
-  }
-  .word:hover {
-    background: #3a3a3a;
-  }
-  .word.speaking {
-    background: #4caf50;
-    color: #000;
   }
   #loading {
     padding: 20px;
@@ -109,7 +101,7 @@
 
 <div id="controls">
   <button id="toggleVideoBtn">Скрыть видео (Enter)</button>
-  <span class="hint">Пробел — пауза, ←/→ — ±5 сек, клик по слову — озвучка</span>
+  <span class="hint">Пробел — пауза, ←/→ — ±5 сек, клик по субтитру — перемотка</span>
 </div>
 
 <div id="subtitles">
@@ -141,7 +133,7 @@
         seconds: timeToSeconds(c.time)
       }));
       renderCues();
-      // Безопасное удаление индикатора загрузки
+      
       const loadingEl = document.getElementById('loading');
       if (loadingEl) loadingEl.remove();
     })
@@ -160,15 +152,11 @@
       const div = document.createElement('div');
       div.className = 'cue';
       div.dataset.index = i;
+      div.dataset.time = cue.seconds; // Сохраняем время начала для перемотки
 
       const en = document.createElement('div');
       en.className = 'en';
-      en.innerHTML = cue.text.split(/(\s+)/).map(part => {
-        if (/^\s+$/.test(part) || part === '') return part;
-        const clean = part.replace(/[^a-zA-Z']/g, '');
-        if (!clean) return part;
-        return `<span class="word" data-word="${clean}">${part}</span>`;
-      }).join('');
+      en.textContent = cue.text;
 
       const ru = document.createElement('div');
       ru.className = 'ru';
@@ -179,42 +167,23 @@
       container.appendChild(div);
     });
 
+    // Клик по блоку субтитров — перемотка
     container.addEventListener('click', e => {
-      const wordEl = e.target.closest('.word');
-      if (!wordEl) return;
-      speakWord(wordEl);
+      const cueEl = e.target.closest('.cue');
+      if (!cueEl) return;
+      
+      const timeToSeek = parseFloat(cueEl.dataset.time);
+      if (playerReady && player && typeof player.seekTo === 'function') {
+        player.seekTo(timeToSeek, true);
+        // Включаем воспроизведение, если на паузе
+        if (player.getPlayerState() !== YT.PlayerState.PLAYING) {
+          player.playVideo();
+        }
+      }
     });
   }
 
-  // ===== 2. Text-to-Speech =====
-  let currentUtterance = null;
-
-  function speakWord(el) {
-    const word = el.dataset.word;
-    if (!word) return;
-    if (currentUtterance) speechSynthesis.cancel();
-
-    document.querySelectorAll('.word.speaking').forEach(w => w.classList.remove('speaking'));
-    el.classList.add('speaking');
-
-    const utter = new SpeechSynthesisUtterance(word);
-    utter.lang = 'en-US';
-    utter.rate = 0.9;
-
-    const voices = speechSynthesis.getVoices();
-    const enVoice = voices.find(v => v.lang.startsWith('en'));
-    if (enVoice) utter.voice = enVoice;
-
-    utter.onend = () => el.classList.remove('speaking');
-    utter.onerror = () => el.classList.remove('speaking');
-
-    currentUtterance = utter;
-    speechSynthesis.speak(utter);
-  }
-
-  speechSynthesis.onvoiceschanged = () => {};
-
-  // ===== 3. YouTube IFrame API =====
+  // ===== 2. YouTube IFrame API =====
   const VIDEO_ID = 'rk2dsMOoe8U';
 
   window.onYouTubeIframeAPIReady = function() {
@@ -237,7 +206,7 @@
   tag.src = 'https://www.youtube.com/iframe_api';
   document.head.appendChild(tag);
 
-  // ===== 4. Синхронизация субтитров =====
+  // ===== 3. Синхронизация субтитров =====
   setInterval(() => {
     if (!playerReady || !player || typeof player.getCurrentTime !== 'function') return;
     const t = player.getCurrentTime();
@@ -259,7 +228,7 @@
     }
   }, 250);
 
-  // ===== 5. Управление видео (скрыть/показать) =====
+  // ===== 4. Управление видео (скрыть/показать) =====
   let isVideoHidden = false;
   const videoBtn = document.getElementById('toggleVideoBtn');
   const playerWrap = document.getElementById('player-wrap');
@@ -278,13 +247,12 @@
       ytPlayerDiv.style.height = '45vh';
       videoBtn.textContent = 'Скрыть видео (Enter)';
     }
-    // Снимаем фокус с кнопки, чтобы пробел не нажимал её повторно
     videoBtn.blur();
   }
 
   videoBtn.addEventListener('click', toggleVideoVisibility);
 
-  // ===== 6. Горячие клавиши =====
+  // ===== 5. Горячие клавиши =====
   document.addEventListener('keydown', e => {
     if (!playerReady || !player) return;
     
